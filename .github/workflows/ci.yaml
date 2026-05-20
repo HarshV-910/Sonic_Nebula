@@ -43,7 +43,9 @@ jobs:
 # dvc data pull and testing app
 
       - name: DVC pull
-        run: dvc pull
+        run: |
+          dvc pull
+          dvc pull data/processed/Music_Info_flask.csv.dvc
       
       - name: Run Application
         env:
