@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="mb-8 mt-4">
+    <h2 class="font-headline text-3xl md:text-4xl font-bold tracking-tight text-on-surface">General Settings</h2>
+    <p class="text-on-surface-variant mt-2">Manage your sonic experience and account preferences.</p>
+</header>
+
+<div class="space-y-6 md:space-y-8">
+    <!-- Audio Engine -->
+    <section class="glass-pane p-5 md:p-6 rounded-3xl">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-cyan-400">graphic_eq</span>
+            <h3 class="font-headline text-lg font-semibold tracking-wide">Audio Engine</h3>
+        </div>
+        <div class="space-y-6">
+            <!-- Toggle: High Quality Audio -->
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="font-medium text-on-surface">High Quality Audio</p>
+                    <p class="text-xs text-on-surface-variant">Stream at 320kbps for crystal clear fidelity.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                    <input type="checkbox" checked class="sr-only peer">
+                    <div class="w-11 h-6 bg-zinc-700 rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                </label>
+            </div>
+            <!-- Toggle: Data Saver -->
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="font-medium text-on-surface">Data Saver</p>
+                    <p class="text-xs text-on-surface-variant">Automatically reduce quality on cellular networks.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                    <input type="checkbox" class="sr-only peer">
+                    <div class="w-11 h-6 bg-zinc-700 rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="glass-pane p-5 md:p-6 rounded-3xl">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-secondary">sensors</span>
+            <h3 class="font-headline text-lg font-semibold tracking-wide">Notifications</h3>
+        </div>
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <p class="font-medium text-on-surface">Push Notifications</p>
+                <p class="text-xs text-on-surface-variant">Get alerts for new releases and friend activity.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-11 h-6 bg-zinc-700 rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+            </label>
+        </div>
+    </section>
+
+    <!-- Account -->
+    <section class="glass-pane p-5 md:p-6 rounded-3xl">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-tertiary">shield</span>
+            <h3 class="font-headline text-lg font-semibold tracking-wide">Account</h3>
+        </div>
+        <div class="space-y-2">
+            <a href="/profile" class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined text-zinc-400 group-hover:text-white transition-colors">person_edit</span>
+                    <span class="font-medium">Edit Profile</span>
+                </div>
+                <span class="material-symbols-outlined text-zinc-600">chevron_right</span>
+            </a>
+            <button class="w-full flex items-center justify-between p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined text-zinc-400 group-hover:text-white transition-colors">devices</span>
+                    <span class="font-medium">Manage Devices</span>
+                </div>
+                <span class="material-symbols-outlined text-zinc-600">chevron_right</span>
+            </button>
+            <div class="pt-4 mt-4 border-t border-white/5">
+                <a href="/logout" class="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-tertiary-container/10 border border-tertiary/20 text-tertiary font-bold transition-all hover:bg-tertiary-container/20">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Logout of Sonic Nebula</span>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Version -->
+<footer class="mt-10 mb-8 text-center">
+    <p class="text-zinc-600 text-xs font-headline uppercase tracking-[0.2em]">Sonic Nebula v2.4.0-Stable</p>
+</footer>
+{% endblock %}

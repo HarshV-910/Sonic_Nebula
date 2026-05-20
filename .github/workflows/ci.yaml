@@ -46,8 +46,11 @@ jobs:
         run: dvc pull
       
       - name: Run Application
+        env:
+          AWS_REGION: ap-southeast-2
+          SECRET_KEY: test-secret-key-123
         run: |
-          nohup streamlit run app.py --server.port 8000 & sleep 30
+          cd flask && nohup gunicorn --preload --workers 2 --threads 4 --bind 0.0.0.0:8000 app:app & sleep 20
         
       - name: Test App
         run: |
@@ -55,7 +58,7 @@ jobs:
       
       - name: Stop Application
         run: |
-          pkill -f "streamlit run"
+          pkill -f "gunicorn"
 
 # AWS ECR login, build and push Docker image
       - name: Login to AWS ECR

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Profile Header -->
+<section class="relative mt-4">
+    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 blur-2xl opacity-50"></div>
+    <div class="relative flex flex-col md:flex-row items-center gap-6 md:gap-8 p-6 md:p-8 rounded-3xl glass-pane border border-white/5">
+        <div class="relative">
+            <div class="w-28 h-28 md:w-32 md:h-32 rounded-full p-1 bg-gradient-to-tr from-cyan-400 to-violet-400">
+                <div class="w-full h-full rounded-full bg-zinc-900 overflow-hidden">
+                    <img alt="Avatar" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwFQXZUjcMG-y_exdYz6HGPhSDCKaD2rlhMGC8_RY4phZJWRYM4H0PJ8zS-022REmsBjPuREY3cyepUNZXryyyqpeNzSZjzh6HI5ruvFWtEm3c2OgXg1RXeof6hLtsWkpGHc2buxSLrpNTYwuPg_OYtSW1j7SkMvHV4788vW0GZVla1SuSdMn3dU1Xmd2FXqpfe-JHvnxuEMPRuyahtpTYBFoiTfXIXgBXIQticK-W4PONhDnt1bn_Zr-_QO4s3peqXPjXFdD5zaXq"/>
+                </div>
+            </div>
+            <button class="absolute bottom-0 right-0 p-2 bg-secondary-dim rounded-full shadow-lg border border-white/20 hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-white text-sm">edit</span>
+            </button>
+        </div>
+        <div class="text-center md:text-left space-y-2">
+            <h2 class="text-3xl md:text-4xl font-headline font-bold tracking-tight text-on-surface">Audiophile One</h2>
+            <p class="text-on-surface-variant font-medium">Premium Member since 2023</p>
+            <div class="flex gap-2 justify-center md:justify-start">
+                <span class="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold tracking-widest uppercase border border-cyan-500/20">Lossless</span>
+                <span class="px-3 py-1 rounded-full bg-violet-500/10 text-violet-400 text-xs font-bold tracking-widest uppercase border border-violet-500/20">Beta Tester</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Settings Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 md:mt-10">
+    <!-- Personal Info -->
+    <section class="space-y-4">
+        <h3 class="text-sm font-headline font-bold uppercase tracking-[0.2em] text-cyan-400 px-2">Personal Info</h3>
+        <div class="glass-pane border border-white/5 rounded-3xl p-5 md:p-6 space-y-5">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter ml-1">Display Name</label>
+                <input class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-2 focus:ring-primary/50 transition-all font-medium text-sm" type="text" value="Audiophile One"/>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter ml-1">Email Address</label>
+                <input class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-2 focus:ring-primary/50 transition-all font-medium text-sm" type="email" value="alex@sonicnebula.io"/>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter ml-1">Bio</label>
+                <textarea class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-2 focus:ring-primary/50 transition-all font-medium h-24 resize-none text-sm">Searching for the perfect frequency in a digital void. Heavy bass enthusiast.</textarea>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+<!-- Streaming Preferences -->
+<section class="space-y-4 mt-8 md:mt-10">
+    <h3 class="text-sm font-headline font-bold uppercase tracking-[0.2em] text-cyan-400 px-2">Streaming Preferences</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-pane border border-white/5 rounded-2xl p-5 hover:shadow-[0_0_24px_rgba(129,236,255,0.1)] transition-all">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="material-symbols-outlined text-cyan-400">high_quality</span>
+                <span class="text-sm font-bold">Audio Quality</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-4">Set your streaming and download bitrates.</p>
+            <select class="w-full bg-surface-container border-none rounded-lg text-xs font-medium text-cyan-300 py-2 px-3">
+                <option>Extreme (Lossless)</option>
+                <option>High (320kbps)</option>
+                <option>Normal (160kbps)</option>
+            </select>
+        </div>
+        <div class="glass-pane border border-white/5 rounded-2xl p-5 hover:shadow-[0_0_24px_rgba(129,236,255,0.1)] transition-all">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="material-symbols-outlined text-violet-400">equalizer</span>
+                <span class="text-sm font-bold">Equalizer</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-4">Current Profile: <span class="text-violet-400">Deep Space Bass</span></p>
+            <button class="w-full py-2 rounded-lg bg-surface-container text-xs font-medium hover:bg-white/5 transition-colors">Open EQ Settings</button>
+        </div>
+        <div class="glass-pane border border-white/5 rounded-2xl p-5 hover:shadow-[0_0_24px_rgba(129,236,255,0.1)] transition-all">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="material-symbols-outlined text-tertiary">download</span>
+                <span class="text-sm font-bold">Offline Storage</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mb-2">12.4 GB of 50 GB used</p>
+            <div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+                <div class="w-1/4 h-full bg-gradient-to-r from-cyan-400 to-violet-400"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Save Actions -->
+<footer class="flex items-center justify-end gap-4 py-10 border-t border-white/5 mt-8">
+    <button class="px-6 md:px-8 py-3 rounded-xl text-on-surface-variant font-medium hover:text-on-surface transition-colors text-sm">Discard</button>
+    <button class="px-8 md:px-10 py-3 rounded-xl bg-gradient-to-r from-secondary-dim to-primary-dim text-white font-bold shadow-lg shadow-cyan-500/20 hover:scale-105 active:scale-95 transition-all text-sm">Save Changes</button>
+</footer>
+{% endblock %}

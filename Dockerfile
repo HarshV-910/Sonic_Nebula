@@ -16,18 +16,19 @@ RUN pip install --upgrade pip && \
 
 COPY ./data/processed/interaction_matrix.npz ./data/processed/
 COPY ./data/processed/Music_Info_app.csv ./data/processed/
+COPY ./data/processed/Music_Info_flask.csv ./data/processed/
 COPY ./data/processed/df_transformed.npz ./data/processed/
 
 COPY ./models/track_ids.npy ./models/
 
 # COPY ./data/raw/Music_Info.csv ./data/raw/
 
-COPY app.py .
+COPY flask/ /app/flask/
 COPY ./src/ /app/src/
 
 EXPOSE 8000
 
-CMD ["streamlit", "run", "app.py", "--server.port", "8000", "--server.address", "0.0.0.0"]
+CMD ["gunicorn", "--chdir", "flask", "--preload", "--workers", "2", "--threads", "4", "--bind", "0.0.0.0:8000", "app:app"]
 
 
 # file structure will looks like:

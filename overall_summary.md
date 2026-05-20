@@ -306,13 +306,14 @@ sudo systemctl start codedeploy-agent
 ```
 
 - create auto-scaling-grp:
-  - name: `hybrid_sys_asg`
+  - name: `hybrid_sys_asg1`
   - template: `hybrid_sys_template`
   - availability_zone: ap-southeast-2a & ap-southeast-2b
   - load_balancer: attach_a_new_balancer
-  - load_balancer_name: `hybrid-sys-elb`
+  - load_balancer_name: `hybrid-sys-elb1`
   - scheme: internet_facing
-  - target_grp: new: `hybrid-sys-tg1`
+  - port: 8000
+  - target_grp: new: `hybrid-sys-targetgrp`
   - health_check: elb health check
   - max: 3
   - target_tracking_policy: avg. cpu utilization on 50%
@@ -325,11 +326,11 @@ sudo systemctl start codedeploy-agent
 - code_deploy create application:
   - name: `hybrid_sys_app`
   - compute: ec2
-  - create deployment grp: `hybrid_sys_deployment_grp`
+  - create deployment grp: `hybrid_sys_deployment_grp1`
   - role: `hybrid_sys_codedeploy_service_role`
   - type: Blue/Green
-  - selectasg: `hybrid_sys_asg`
-  - load-balancer: application load balancer: `hybrid-sys-tg1`
+  - selectasg: `hybrid_sys_asg1`
+  - load-balancer: application load balancer: `hybrid-sys-targetgrp`
 
 - create deployment s3 bucket: name: `hybrid-sys-deployment-bkt`
 

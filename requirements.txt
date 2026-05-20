@@ -68,10 +68,13 @@ blinker==1.9.0
     #   streamlit
 bokeh==3.9.0
     # via dask
+boto3==1.42.70
+    # via -r requirements.in
 botocore==1.42.70
     # via
     #   aiobotocore
     #   awscli
+    #   boto3
     #   dvc-s3
     #   s3transfer
 cachetools==7.0.5
@@ -124,7 +127,9 @@ configobj==5.0.9
 contourpy==1.3.2
     # via bokeh
 cryptography==46.0.5
-    # via asyncssh
+    # via
+    #   asyncssh
+    #   google-auth
 dask[array,complete,dataframe,diagnostics,distributed]==2026.3.0
     # via
     #   -r requirements.in
@@ -187,6 +192,7 @@ filelock==3.25.2
     # via iterative-telemetry
 flask==3.1.3
     # via
+    #   -r requirements.in
     #   mlflow
     #   prometheus-flask-exporter
 flatten-dict==0.4.2
@@ -225,6 +231,19 @@ gitpython==3.1.46
     #   mlflow
     #   scmrepo
     #   streamlit
+google-api-core==2.30.3
+    # via google-api-python-client
+google-api-python-client==2.196.0
+    # via -r requirements.in
+google-auth==2.53.0
+    # via
+    #   google-api-core
+    #   google-api-python-client
+    #   google-auth-httplib2
+google-auth-httplib2==0.4.0
+    # via google-api-python-client
+googleapis-common-protos==1.75.0
+    # via google-api-core
 grandalf==0.8
     # via dvc
 greenlet==3.3.2
@@ -232,9 +251,15 @@ greenlet==3.3.2
 gto==1.9.0
     # via dvc
 gunicorn==25.3.0
-    # via mlflow
+    # via
+    #   -r requirements.in
+    #   mlflow
 h11==0.16.0
     # via uvicorn
+httplib2==0.31.2
+    # via
+    #   google-api-python-client
+    #   google-auth-httplib2
 hydra-core==1.3.2
     # via dvc
 idna==3.11
@@ -263,6 +288,7 @@ jinja2==3.1.6
 jmespath==1.1.0
     # via
     #   aiobotocore
+    #   boto3
     #   botocore
 joblib==1.5.3
     # via
@@ -385,9 +411,14 @@ propcache==0.4.1
     # via
     #   aiohttp
     #   yarl
+proto-plus==1.28.0
+    # via google-api-core
 protobuf==6.33.6
     # via
+    #   google-api-core
+    #   googleapis-common-protos
     #   mlflow
+    #   proto-plus
     #   streamlit
 psutil==7.2.2
     # via
@@ -399,7 +430,11 @@ pyarrow==23.0.1
     #   dask
     #   streamlit
 pyasn1==0.6.3
-    # via rsa
+    # via
+    #   pyasn1-modules
+    #   rsa
+pyasn1-modules==0.4.2
+    # via google-auth
 pycparser==3.0
     # via cffi
 pydantic==2.12.5
@@ -433,6 +468,7 @@ pyparsing==3.3.2
     # via
     #   dvc
     #   grandalf
+    #   httplib2
     #   pydot
 pytest==9.0.2
     # via -r requirements.in
@@ -450,6 +486,7 @@ pytz==2026.1.post1
     #   pandas
 pyyaml==6.0.3
     # via
+    #   -r requirements.in
     #   awscli
     #   bokeh
     #   dask
@@ -469,6 +506,7 @@ requests==2.32.5
     #   docker
     #   dvc
     #   dvc-studio-client
+    #   google-api-core
     #   iterative-telemetry
     #   mlflow
     #   streamlit
@@ -490,7 +528,9 @@ ruamel-yaml==0.19.1
 s3fs==2026.2.0
     # via dvc-s3
 s3transfer==0.16.0
-    # via awscli
+    # via
+    #   awscli
+    #   boto3
 scikit-learn==1.7.2
     # via
     #   -r requirements.in
@@ -610,6 +650,8 @@ tzdata==2025.3
     #   pandas
 tzlocal==5.3.1
     # via celery
+uritemplate==4.2.0
+    # via google-api-python-client
 urllib3==2.6.3
     # via
     #   botocore

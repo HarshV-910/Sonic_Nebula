@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sonic Nebula - Premium Audio</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: {
+                "colors": { "primary": "#81ecff", "secondary": "#a68cff", "surface": "#0e0e10", "surface-container": "#19191c", "surface-container-high": "#1f1f22", "surface-container-highest": "#262528", "surface-bright": "#2c2c2f", "primary-dim": "#00d4ec", "secondary-dim": "#7e51ff", "on-primary": "#005762", "on-primary-fixed": "#003840", "on-surface": "#f9f5f8", "on-surface-variant": "#adaaad", "tertiary": "#ff7076", "tertiary-container": "#fe1543", "error": "#ff6e84" },
+                "fontFamily": { "headline": ["Space Grotesk"], "body": ["Inter"], "label": ["Inter"] }
+            }}
+        }
+    </script>
+    <style>
+        body { background-color: #0e0e10; color: #f9f5f8; font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-pane { background: linear-gradient(135deg, rgba(166,140,255,0.05) 0%, rgba(129,236,255,0.05) 100%); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); }
+        .nebula-bg { background: radial-gradient(circle at 20% 30%, rgba(89,26,220,0.12) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(0,227,253,0.08) 0%, transparent 40%); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #262528; border-radius: 10px; }
+        #voice-btn { position: relative; transition: all 0.3s ease; }
+        #voice-btn.listening { color: #ff4081 !important; animation: pulse-glow 1.2s ease-in-out infinite; }
+        #voice-btn.listening::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid #ff4081; animation: ripple-ring 1.5s ease-out infinite; }
+        #voice-btn.listening::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1px solid rgba(255,64,129,0.3); animation: ripple-ring 1.5s ease-out infinite 0.4s; }
+        @keyframes pulse-glow { 0%, 100% { text-shadow: 0 0 8px rgba(255,64,129,0.6); transform: scale(1); } 50% { text-shadow: 0 0 20px rgba(255,64,129,1), 0 0 40px rgba(255,64,129,0.4); transform: scale(1.15); } }
+        @keyframes ripple-ring { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+        #voice-tooltip { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: rgba(255,64,129,0.9); color: white; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.3s ease; }
+        #voice-btn.listening + #voice-tooltip { opacity: 1; }
+        #volume-slider::-webkit-slider-thumb { appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #81ecff; cursor: pointer; }
+        .bottom-nav-link.active { color: #81ecff; filter: drop-shadow(0 0 8px rgba(129,236,255,0.6)); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface nebula-bg h-screen overflow-hidden">
+
+<!-- =================== DESKTOP LEFT SIDEBAR =================== -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-full flex-col p-6 bg-zinc-950/40 backdrop-blur-3xl w-64 border-r border-white/10 z-50">
+    <div class="mb-10">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent font-headline">Sonic Nebula</h1>
+        <p class="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">Premium Audio</p>
+    </div>
+    <nav class="flex-1 space-y-2">
+        <a href="/" class="sidebar-link flex items-center gap-4 p-3 rounded-xl transition-all text-zinc-400 hover:text-zinc-100 hover:bg-white/5" data-page="home">
+            <span class="material-symbols-outlined">home</span><span class="font-medium">Home</span>
+        </a>
+        <a href="/explore" class="sidebar-link flex items-center gap-4 p-3 rounded-xl transition-all text-zinc-400 hover:text-zinc-100 hover:bg-white/5" data-page="explore">
+            <span class="material-symbols-outlined">travel_explore</span><span class="font-medium">Explore</span>
+        </a>
+        <a href="/global_search" class="sidebar-link flex items-center gap-4 p-3 rounded-xl transition-all text-zinc-400 hover:text-zinc-100 hover:bg-white/5" data-page="global_search">
+            <span class="material-symbols-outlined">search</span><span class="font-medium">YouTube Search</span>
+        </a>
+        <a href="/settings" class="sidebar-link flex items-center gap-4 p-3 rounded-xl transition-all text-zinc-400 hover:text-zinc-100 hover:bg-white/5" data-page="settings">
+            <span class="material-symbols-outlined">settings</span><span class="font-medium">Settings</span>
+        </a>
+        <a href="/profile" class="sidebar-link flex items-center gap-4 p-3 rounded-xl transition-all text-zinc-400 hover:text-zinc-100 hover:bg-white/5" data-page="profile">
+            <span class="material-symbols-outlined">person</span><span class="font-medium">Profile</span>
+        </a>
+    </nav>
+    <div class="mt-auto pt-6 border-t border-white/5">
+        <a href="/logout" class="w-full py-3 px-4 rounded-xl bg-tertiary-container/10 border border-tertiary/20 text-tertiary font-bold text-sm flex items-center justify-center gap-2 hover:bg-tertiary-container/20 transition-all">
+            <span class="material-symbols-outlined text-sm">logout</span> Logout
+        </a>
+    </div>
+</aside>
+
+<!-- =================== MOBILE TOP BAR =================== -->
+<header class="lg:hidden fixed top-0 w-full z-50 flex items-center justify-between px-5 py-3 bg-zinc-950/40 backdrop-blur-xl border-b border-white/10">
+    <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-cyan-400 text-xl" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+        <h1 class="text-lg font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400 font-headline">Sonic Nebula</h1>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="/global_search" class="text-zinc-400 hover:bg-white/5 p-2 rounded-full transition-colors">
+            <span class="material-symbols-outlined text-xl">search</span>
+        </a>
+        <a href="/profile" class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center border border-white/20">
+            <span class="text-[10px] font-bold">A1</span>
+        </a>
+    </div>
+</header>
+
+<!-- =================== DESKTOP TOP BAR =================== -->
+<header class="hidden lg:flex fixed top-0 left-64 right-80 z-40 justify-between items-center px-8 bg-zinc-950/20 backdrop-blur-xl h-16 border-b border-white/5 font-headline font-medium">
+    <div class="flex items-center w-1/2">
+        <div class="relative w-full max-w-md group" id="search-container">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-primary transition-colors material-symbols-outlined">search</span>
+            <input id="search-input" class="w-full bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-zinc-600 text-white" placeholder="Search songs from your library..." type="text"/>
+            <div id="search-results" class="absolute top-12 left-0 w-full bg-surface-container-highest border border-white/10 rounded-xl shadow-2xl hidden z-50 flex-col max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+    <div class="flex items-center gap-6">
+        <nav class="flex items-center gap-6 mr-4">
+            <a class="desktop-nav-link text-zinc-400 hover:text-cyan-400 transition-colors pb-1" href="/" data-page="home">Home</a>
+            <a class="desktop-nav-link text-zinc-400 hover:text-cyan-400 transition-colors pb-1" href="/explore" data-page="explore">Explore</a>
+            <a class="desktop-nav-link text-zinc-400 hover:text-cyan-400 transition-colors pb-1" href="/global_search" data-page="global_search">YouTube</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <a href="/settings" class="text-zinc-400 hover:text-white transition-colors material-symbols-outlined">settings</a>
+            <a href="/profile" class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center border border-white/20">
+                <span class="text-[10px] font-bold text-white">A1</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- =================== MAIN CONTENT =================== -->
+<main class="lg:ml-64 lg:mr-80 flex flex-col overflow-hidden relative h-screen">
+    <div id="main-scroll-area" class="flex-1 pt-16 lg:pt-16 overflow-y-auto px-4 lg:px-8 pb-44 lg:pb-32">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<!-- =================== DESKTOP RIGHT SIDEBAR =================== -->
+<aside class="sidebar-right fixed right-0 top-0 h-full w-80 bg-zinc-950/40 backdrop-blur-3xl border-l border-white/10 p-6 overflow-y-auto z-40 hidden lg:block pt-20">
+    {% block right_sidebar %}{% endblock %}
+</aside>
+
+<!-- =================== MOBILE MINI PLAYBAR =================== -->
+<div id="mobile-playbar" class="lg:hidden fixed bottom-20 left-0 right-0 z-[60] px-3 hidden">
+    <div class="glass-pane bg-zinc-900/60 rounded-2xl p-3 flex items-center gap-3 shadow-[0_0_30px_rgba(0,0,0,0.6)]">
+        <div class="w-12 h-12 rounded-lg bg-zinc-800 overflow-hidden shadow-lg flex-shrink-0">
+            <img id="mobile-playbar-art" class="w-full h-full object-cover" src="{{ default_track.cover }}" alt="Art"/>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p id="mobile-playbar-title" class="text-xs font-headline font-bold text-white truncate">{{ default_track.name }}</p>
+            <p id="mobile-playbar-artist" class="text-[10px] text-zinc-500 truncate">{{ default_track.artist }}</p>
+        </div>
+        <a id="mobile-youtube-search-btn" href="/global_search" title="Search on YouTube" class="material-symbols-outlined text-red-500/80 hover:text-red-400 transition-colors text-2xl mr-2">smart_display</a>
+        <button id="mobile-play-pause-btn" class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">play_circle</button>
+    </div>
+</div>
+
+<!-- =================== MOBILE BOTTOM NAV =================== -->
+<nav class="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-6 bg-zinc-900/60 backdrop-blur-2xl border-t border-white/5 rounded-t-2xl">
+    <a href="/" class="bottom-nav-link flex flex-col items-center justify-center transition-all" data-page="home">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+    </a>
+    <a href="/explore" class="bottom-nav-link flex flex-col items-center justify-center text-zinc-500 transition-all" data-page="explore">
+        <span class="material-symbols-outlined">travel_explore</span>
+    </a>
+    <a href="/settings" class="bottom-nav-link flex flex-col items-center justify-center text-zinc-500 transition-all" data-page="settings">
+        <span class="material-symbols-outlined">library_music</span>
+    </a>
+    <a href="/profile" class="bottom-nav-link flex flex-col items-center justify-center text-zinc-500 transition-all" data-page="profile">
+        <span class="material-symbols-outlined">person</span>
+    </a>
+</nav>
+
+<!-- =================== DESKTOP PLAYBAR =================== -->
+<footer class="hidden lg:flex fixed bottom-0 right-0 left-0 h-24 bg-zinc-900/60 backdrop-blur-2xl border-t border-white/10 z-50 items-center justify-between px-6 xl:px-12 w-full font-body">
+    <div class="flex items-center gap-4 w-1/4 min-w-[200px]">
+        <div class="w-14 h-14 rounded-lg bg-zinc-800 overflow-hidden shadow-lg flex-shrink-0">
+            <img id="playbar-art" class="w-full h-full object-cover" src="{{ default_track.cover }}" alt="Art"/>
+        </div>
+        <div class="overflow-hidden">
+            <h5 id="playbar-title" class="text-white font-bold text-sm truncate">{{ default_track.name }}</h5>
+            <p id="playbar-artist" class="text-xs text-zinc-500 truncate">{{ default_track.artist }}</p>
+        </div>
+        <button class="material-symbols-outlined text-zinc-400 hover:text-primary transition-colors text-xl ml-2">favorite</button>
+        <a id="desktop-youtube-search-btn" href="/global_search" title="Search on YouTube video" class="material-symbols-outlined text-red-500/80 hover:text-red-400 transition-colors text-xl ml-1">smart_display</a>
+    </div>
+    <div class="flex flex-col items-center gap-2 flex-1 max-w-2xl">
+        <div class="flex items-center gap-8">
+            <button class="material-symbols-outlined text-zinc-500 hover:text-white transition-colors">shuffle</button>
+            <button id="skip-prev-btn" class="material-symbols-outlined text-white text-2xl hover:scale-110 transition-transform">skip_previous</button>
+            <button id="play-pause-btn" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                <span class="material-symbols-outlined text-zinc-900" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+            </button>
+            <button id="skip-next-btn" class="material-symbols-outlined text-white text-2xl hover:scale-110 transition-transform">skip_next</button>
+            <button class="material-symbols-outlined text-zinc-500 hover:text-white transition-colors">repeat</button>
+        </div>
+        <div class="w-full flex items-center gap-3">
+            <span id="current-time" class="text-[10px] text-zinc-500 font-headline">0:00</span>
+            <div id="progress-container" class="py-3 flex-1 cursor-pointer group hover:opacity-80 transition-opacity flex items-center">
+                <div class="h-1 w-full bg-zinc-800 rounded-full relative overflow-hidden">
+                    <div id="progress-bar" class="absolute top-0 left-0 h-full bg-cyan-400 w-0 transition-all duration-100 ease-linear"></div>
+                </div>
+            </div>
+            <span id="total-time" class="text-[10px] text-zinc-500 font-headline">0:00</span>
+        </div>
+    </div>
+    <div class="flex items-center justify-end gap-4 w-1/4 min-w-[200px]">
+        <div class="relative">
+            <button id="voice-btn" class="material-symbols-outlined text-zinc-400 hover:text-primary transition-all cursor-pointer" style="font-variation-settings: 'FILL' 1;" title="Voice Control">mic</button>
+            <div id="voice-tooltip">Listening...</div>
+        </div>
+        <div class="flex items-center gap-2 w-24">
+            <span class="material-symbols-outlined text-zinc-500 text-lg">volume_up</span>
+            <input type="range" id="volume-slider" min="0" max="100" value="100" class="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer outline-none">
+        </div>
+    </div>
+</footer>
+
+<!-- Hidden Audio & YouTube Player -->
+<audio id="audio-player" preload="auto" src="{{ default_track.spotify_preview_url or '' }}"></audio>
+<div id="yt-player-container" style="position:fixed;bottom:0;right:0;width:200px;height:200px;opacity:0.01;pointer-events:none;z-index:-1;"></div>
+
+<script>
+    // =================== AUDIO ENGINE ===================
+    const audioPlayer = document.getElementById('audio-player');
+    let isPlaying = false;
+    let playHistory = [{
+        name: "{{ default_track.name|e }}",
+        artist: "{{ default_track.artist|e }}",
+        previewUrl: "{{ default_track.spotify_preview_url|e }}",
+        cover: "{{ default_track.cover|e }}",
+        mode: "audio"
+    }];
+    let currentTrackIndex = 0;
+    let playerMode = 'audio'; // 'audio' or 'youtube'
+    let ytPlayer = null;
+    let progressInterval = null;
+
+    function updatePlayerUI(title, artist, cover) {
+        ['playbar-title', 'mobile-playbar-title'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = title || "Unknown"; });
+        ['playbar-artist', 'mobile-playbar-artist'].forEach(id => { const el = document.getElementById(id); if(el) el.innerText = artist || ""; });
+        if(cover) {
+            ['playbar-art', 'mobile-playbar-art'].forEach(id => { const el = document.getElementById(id); if(el) el.src = cover; });
+        }
+        const searchUrl = `/global_search?q=${encodeURIComponent(title + ' ' + (artist === 'YouTube' ? '' : artist))}`;
+        const desktopBtn = document.getElementById('desktop-youtube-search-btn');
+        if (desktopBtn) desktopBtn.href = searchUrl;
+        const mobileBtn = document.getElementById('mobile-youtube-search-btn');
+        if (mobileBtn) mobileBtn.href = searchUrl;
+
+        const mp = document.getElementById('mobile-playbar');
+        if(mp) mp.classList.remove('hidden');
+    }
+
+    function updatePlayBtn() {
+        const btnIcon = document.querySelector('#play-pause-btn span');
+        if(btnIcon) btnIcon.innerText = isPlaying ? 'pause' : 'play_arrow';
+        const mobileBtn = document.getElementById('mobile-play-pause-btn');
+        if(mobileBtn) mobileBtn.innerText = isPlaying ? 'pause_circle' : 'play_circle';
+    }
+
+    function formatTime(seconds) {
+        if(!seconds || isNaN(seconds)) return '0:00';
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function startProgressTracking() {
+        clearInterval(progressInterval);
+        progressInterval = setInterval(() => {
+            if(playerMode === 'audio' && audioPlayer && !audioPlayer.paused) {
+                const curr = audioPlayer.currentTime;
+                const total = audioPlayer.duration;
+                document.getElementById('current-time').innerText = formatTime(curr);
+                document.getElementById('total-time').innerText = formatTime(total);
+                document.getElementById('progress-bar').style.width = `${(curr/total)*100}%`;
+            }
+        }, 500);
+    }
+
+    // --- Play Spotify Preview (main method for dataset songs) ---
+    window.playSong = function(name, artist, previewUrl, cover) {
+        playerMode = 'audio';
+        // Stop YouTube if playing
+        if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+        
+        updatePlayerUI(name, artist, cover);
+
+        if(previewUrl && previewUrl !== 'nan' && previewUrl !== '' && previewUrl !== 'None') {
+            audioPlayer.src = previewUrl;
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                updatePlayBtn();
+                startProgressTracking();
+            }).catch(e => { console.error('Audio play error:', e); });
+        } else {
+            // Fallback: try YouTube API
+            playViaYouTube(name, artist, cover);
+        }
+
+        playHistory = playHistory.slice(0, currentTrackIndex + 1);
+        playHistory.push({ name, artist, previewUrl, cover, mode: previewUrl ? 'audio' : 'youtube' });
+        currentTrackIndex = playHistory.length - 1;
+    };
+
+    // --- Play via YouTube (for external search results) ---
+    window.playVideoId = function(videoId, title, thumbnail) {
+        playerMode = 'youtube';
+        audioPlayer.pause();
+        updatePlayerUI(title, 'YouTube', thumbnail);
+
+        if(ytPlayer && ytPlayer.loadVideoById) {
+            ytPlayer.loadVideoById(videoId);
+            ytPlayer.playVideo();
+        }
+
+        playHistory = playHistory.slice(0, currentTrackIndex + 1);
+        playHistory.push({ name: title, artist: 'YouTube', videoId, thumbnail, mode: 'youtube' });
+        currentTrackIndex = playHistory.length - 1;
+    };
+
+    async function playViaYouTube(name, artist, cover) {
+        try {
+            const res = await fetch(`/api/youtube?song=${encodeURIComponent(name)}&artist=${encodeURIComponent(artist || '')}`);
+            if(!res.ok) throw new Error('Not found');
+            const data = await res.json();
+            if(data.video_id) {
+                playerMode = 'youtube';
+                updatePlayerUI(name, artist, data.thumbnail_url || cover);
+                if(ytPlayer && ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById(data.video_id);
+                    ytPlayer.playVideo();
+                }
+            }
+        } catch(e) { console.error('YouTube fallback failed:', e); }
+    }
+
+    // YouTube API script
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+    function onYouTubeIframeAPIReady() { 
+        console.log("YouTube API Ready"); 
+        ytPlayer = new YT.Player('yt-player-container', {
+            height: '200', width: '200',
+            playerVars: { 'autoplay': 1, 'playsinline': 1, 'origin': window.location.origin },
+            events: {
+                'onStateChange': (e) => {
+                    if(e.data == YT.PlayerState.PLAYING) { isPlaying = true; }
+                    else if(e.data == YT.PlayerState.ENDED) { isPlaying = false; document.getElementById('skip-next-btn').click(); }
+                    else { isPlaying = false; }
+                    updatePlayBtn();
+                }
+            }
+        });
+    }
+
+    // Audio player events
+    audioPlayer.addEventListener('ended', () => {
+        isPlaying = false; updatePlayBtn();
+        document.getElementById('skip-next-btn').click();
+    });
+    audioPlayer.addEventListener('play', () => { isPlaying = true; updatePlayBtn(); });
+    audioPlayer.addEventListener('pause', () => { isPlaying = false; updatePlayBtn(); });
+
+    // Volume
+    document.getElementById('volume-slider').addEventListener('input', (e) => {
+        audioPlayer.volume = e.target.value / 100;
+        if(ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(parseInt(e.target.value));
+    });
+
+    // Progress bar click-to-seek
+    document.getElementById('progress-container').addEventListener('click', (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        if(playerMode === 'audio' && audioPlayer.duration) {
+            audioPlayer.currentTime = pct * audioPlayer.duration;
+        } else if (playerMode === 'youtube' && ytPlayer && ytPlayer.getDuration) {
+            ytPlayer.seekTo(pct * ytPlayer.getDuration(), true);
+        }
+    });
+
+    // =================== PLAYBACK CONTROLS ===================
+    document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
+    document.getElementById('mobile-play-pause-btn').addEventListener('click', togglePlayPause);
+
+    function togglePlayPause() {
+        if(playerMode === 'audio') {
+            if(audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
+        } else if(ytPlayer) {
+            if(isPlaying) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
+        }
+    }
+
+    document.getElementById('skip-prev-btn').addEventListener('click', () => {
+        if(currentTrackIndex > 0) {
+            currentTrackIndex--;
+            replayTrack(playHistory[currentTrackIndex]);
+        }
+    });
+
+    document.getElementById('skip-next-btn').addEventListener('click', () => {
+        if(currentTrackIndex < playHistory.length - 1) {
+            currentTrackIndex++;
+            replayTrack(playHistory[currentTrackIndex]);
+        }
+    });
+
+    function replayTrack(track) {
+        if(!track) return;
+        updatePlayerUI(track.name, track.artist, track.cover || track.thumbnail);
+        if(track.mode === 'youtube' && track.videoId) {
+            playerMode = 'youtube'; audioPlayer.pause();
+            if(ytPlayer && ytPlayer.loadVideoById) ytPlayer.loadVideoById(track.videoId);
+        } else if(track.previewUrl) {
+            playerMode = 'audio';
+            if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+            audioPlayer.src = track.previewUrl;
+            audioPlayer.play().catch(e => console.error(e));
+            startProgressTracking();
+        }
+    }
+
+    // =================== SEARCH AUTOCOMPLETE ===================
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    if(searchInput) {
+        searchInput.addEventListener('input', async (e) => {
+            const query = e.target.value;
+            if(query.length > 2) {
+                const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                searchResults.innerHTML = '';
+                data.forEach(song => {
+                    const div = document.createElement('div');
+                    div.className = 'p-3 hover:bg-white/5 flex items-center gap-3 cursor-pointer';
+                    const hasPreview = song.spotify_preview_url && song.spotify_preview_url !== 'nan';
+                    div.innerHTML = `<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">play_circle</span><div class="flex-1 min-w-0"><p class="font-bold text-sm truncate text-white">${song.name}</p><p class="text-xs text-zinc-400 truncate">${song.artist}</p></div><a href="/recommend/${song.track_id}" class="text-zinc-500 hover:text-primary material-symbols-outlined text-sm" onclick="event.stopPropagation();">open_in_new</a>`;
+                    div.addEventListener('click', () => {
+                        playSong(song.name, song.artist, hasPreview ? song.spotify_preview_url : null, null);
+                        searchResults.style.display = 'none';
+                    });
+                    searchResults.appendChild(div);
+                });
+                searchResults.style.display = data.length > 0 ? 'flex' : 'none';
+            } else { searchResults.style.display = 'none'; }
+        });
+    }
+    document.addEventListener('click', (e) => {
+        const sc = document.getElementById('search-container');
+        if(sc && !sc.contains(e.target) && searchResults) searchResults.style.display = 'none';
+    });
+
+    // =================== SPA NAVIGATION ===================
+    async function navigateTo(url) {
+        try {
+            if(searchResults) searchResults.style.display = 'none';
+            const response = await fetch(url);
+            if(response.redirected && response.url.includes('signin')) { window.location.href = response.url; return; }
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newMain = doc.querySelector('#main-scroll-area');
+            const currentMain = document.getElementById('main-scroll-area');
+            if(newMain && currentMain) {
+                currentMain.innerHTML = newMain.innerHTML;
+                const newSidebar = doc.querySelector('.sidebar-right');
+                const currentSidebar = document.querySelector('.sidebar-right');
+                if(newSidebar && currentSidebar) currentSidebar.innerHTML = newSidebar.innerHTML;
+                window.history.pushState({}, '', url);
+                currentMain.scrollTop = 0;
+                updateActiveNav(url);
+            } else { window.location.href = url; }
+        } catch(err) { console.error("Nav error", err); window.location.href = url; }
+    }
+
+    function updateActiveNav(url) {
+        const path = new URL(url, window.location.origin).pathname;
+        document.querySelectorAll('.bottom-nav-link').forEach(el => { el.classList.remove('active'); el.classList.add('text-zinc-500'); });
+        document.querySelectorAll('.sidebar-link').forEach(el => { el.classList.remove('bg-gradient-to-r','from-violet-500/20','to-cyan-500/10','text-cyan-300','border-r-2','border-cyan-400'); });
+        document.querySelectorAll('.desktop-nav-link').forEach(el => { el.classList.remove('text-cyan-400','border-b-2','border-cyan-400'); });
+
+        let activePage = 'home';
+        if(path.includes('explore')) activePage = 'explore';
+        else if(path.includes('global_search')) activePage = 'global_search';
+        else if(path.includes('settings')) activePage = 'settings';
+        else if(path.includes('profile')) activePage = 'profile';
+        else if(path.includes('genre')) activePage = 'explore';
+
+        document.querySelectorAll(`.bottom-nav-link[data-page="${activePage}"]`).forEach(el => { el.classList.add('active'); el.classList.remove('text-zinc-500'); });
+        document.querySelectorAll(`.sidebar-link[data-page="${activePage}"]`).forEach(el => { el.classList.add('bg-gradient-to-r','from-violet-500/20','to-cyan-500/10','text-cyan-300','border-r-2','border-cyan-400'); });
+        document.querySelectorAll(`.desktop-nav-link[data-page="${activePage}"]`).forEach(el => { el.classList.add('text-cyan-400','border-b-2','border-cyan-400'); });
+    }
+    updateActiveNav(window.location.href);
+
+    document.addEventListener('click', (e) => {
+        const clickedEl = e.target.closest('button, [onclick]');
+        if(clickedEl) return;
+        const link = e.target.closest('a');
+        if(link && link.href && link.href.startsWith(window.location.origin) && !link.href.includes('#') && !link.href.includes('logout')) {
+            e.preventDefault();
+            navigateTo(link.href);
+        }
+    });
+
+    document.addEventListener('submit', (e) => {
+        const form = e.target.closest('form');
+        if(form && form.method.toUpperCase() === 'GET' && form.action.startsWith(window.location.origin)) {
+            e.preventDefault();
+            const params = new URLSearchParams(new FormData(form));
+            const url = new URL(form.action);
+            url.search = params.toString();
+            navigateTo(url.href);
+        }
+    });
+
+    window.addEventListener('popstate', () => { window.location.reload(); });
+
+    // =================== VOICE CONTROL ===================
+    const voiceBtn = document.getElementById('voice-btn');
+    let recognition = null;
+    if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SR();
+        recognition.continuous = false; recognition.interimResults = false; recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+            const t = event.results[0][0].transcript.toLowerCase().trim();
+            console.log('Voice:', t);
+            if(t.includes('pause') || t.includes('stop')) { togglePlayPause(); }
+            else if(t.includes('play') || t.includes('resume')) { togglePlayPause(); }
+            else if(t.includes('next') || t.includes('skip')) { document.getElementById('skip-next-btn').click(); }
+            else if(t.includes('previous') || t.includes('back')) { document.getElementById('skip-prev-btn').click(); }
+            else if(t.includes('mute')) { audioPlayer.volume = 0; document.getElementById('volume-slider').value = 0; }
+            else { playSong(t, '', null, null); }
+        };
+        recognition.onend = () => { voiceBtn.classList.remove('listening'); };
+        recognition.onerror = () => { voiceBtn.classList.remove('listening'); };
+    }
+    if(voiceBtn) {
+        voiceBtn.addEventListener('click', () => {
+            if(!recognition) { alert('Voice not supported. Use Chrome.'); return; }
+            if(voiceBtn.classList.contains('listening')) { recognition.stop(); }
+            else { voiceBtn.classList.add('listening'); recognition.start(); }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Bento Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mt-4 lg:mt-8">
+    <div class="md:col-span-2 relative h-64 md:h-80 rounded-3xl overflow-hidden group">
+        <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ top_picks[0].cover }}" alt="Hero">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-6 md:p-8 w-full glass-pane border-none rounded-t-none">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 bg-tertiary-container text-white text-[10px] font-bold rounded-full font-headline">EXCLUSIVE</span>
+                <span class="text-xs text-cyan-300 font-medium">Sonic Nebula Editorial</span>
+            </div>
+            <h2 class="text-3xl md:text-5xl font-bold font-headline mb-3 tracking-tighter">{{ top_picks[0].name }}</h2>
+            <p class="text-sm text-zinc-400 mb-3">{{ top_picks[0].artist }}</p>
+            <div class="flex items-center gap-3">
+                <button data-name="{{ top_picks[0].name|e }}" data-artist="{{ top_picks[0].artist|e }}" data-preview="{{ top_picks[0].spotify_preview_url|e }}" data-cover="{{ top_picks[0].cover|e }}" onclick="playSong(this.dataset.name, this.dataset.artist, this.dataset.preview, this.dataset.cover)" class="bg-gradient-to-r from-secondary-dim to-primary-dim px-6 py-3 rounded-xl font-bold text-white flex items-center gap-2 active:scale-95 transition-transform shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span> Listen Now
+                </button>
+                <a href="/recommend/{{ top_picks[0].track_id }}" class="glass-pane px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-sm font-bold text-white">
+                    Recommendations
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="glass-pane p-6 md:p-8 rounded-3xl flex flex-col justify-between border-white/10">
+        <div>
+            <span class="material-symbols-outlined text-secondary text-3xl mb-3" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+            <h3 class="text-xl md:text-2xl font-bold font-headline leading-tight mb-2">Today's Top Picks</h3>
+            <p class="text-sm text-on-surface-variant font-light">Curated by our neural rhythm engine.</p>
+        </div>
+        <div class="mt-4 space-y-3">
+            {% for track in top_picks[1:4] %}
+            <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group" data-name="{{ track.name|e }}" data-artist="{{ track.artist|e }}" data-preview="{{ track.spotify_preview_url|e }}" data-cover="{{ track.cover|e }}" onclick="playSong(this.dataset.name, this.dataset.artist, this.dataset.preview, this.dataset.cover)">
+                <div class="w-11 h-11 rounded-lg overflow-hidden bg-surface-container-highest flex-shrink-0">
+                    <img class="w-full h-full object-cover" src="{{ track.cover }}" alt="Art">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold truncate">{{ track.name }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ track.artist }}</p>
+                </div>
+                <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">play_circle</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Popular Releases -->
+<section class="mt-10 lg:mt-12">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl md:text-2xl font-bold font-headline tracking-tight">Popular Releases</h3>
+    </div>
+    <div class="space-y-1">
+        {% for track in top_picks %}
+        <div class="grid grid-cols-[48px_1fr_100px_48px] md:grid-cols-[48px_1.5fr_1fr_80px_48px] items-center gap-3 md:gap-4 p-3 rounded-xl hover:bg-white/5 transition-all group cursor-pointer"
+             data-name="{{ track.name|e }}" data-artist="{{ track.artist|e }}" data-preview="{{ track.spotify_preview_url|e }}" data-cover="{{ track.cover|e }}" onclick="playSong(this.dataset.name, this.dataset.artist, this.dataset.preview, this.dataset.cover)">
+            <div class="w-12 h-12 rounded-lg overflow-hidden relative flex-shrink-0">
+                <img class="w-full h-full object-cover" src="{{ track.cover }}" alt="Art">
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span class="material-symbols-outlined text-white text-xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                </div>
+            </div>
+            <div class="min-w-0">
+                <p class="font-bold text-on-surface truncate text-sm">{{ track.name }}</p>
+                <p class="text-xs text-on-surface-variant md:hidden truncate">{{ track.artist }}</p>
+            </div>
+            <div class="hidden md:block"><p class="text-sm text-on-surface-variant truncate">{{ track.artist }}</p></div>
+            <div class="text-right"><p class="text-xs font-headline text-on-surface-variant">{{ track.duration }}</p></div>
+            <div class="flex justify-end">
+                <a href="/recommend/{{ track.track_id }}" class="text-on-surface-variant hover:text-primary transition-colors" onclick="event.stopPropagation();">
+                    <span class="material-symbols-outlined text-xl">recommend</span>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Genre Lanes -->
+{% for cat_name, tracks in lanes.items() %}
+<section class="mt-10 lg:mt-12">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl md:text-2xl font-bold font-headline tracking-tight">{{ cat_name }}</h3>
+        <a class="text-primary text-sm font-medium hover:underline" href="/genre/{{ cat_name }}">View All</a>
+    </div>
+    <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4">
+        {% for track in tracks %}
+        <div class="flex-shrink-0 w-36 md:w-44 bg-surface-container-high rounded-xl p-3 hover:bg-surface-bright transition-colors group cursor-pointer"
+             data-name="{{ track.name|e }}" data-artist="{{ track.artist|e }}" data-preview="{{ track.spotify_preview_url|e }}" data-cover="{{ track.cover|e }}" onclick="playSong(this.dataset.name, this.dataset.artist, this.dataset.preview, this.dataset.cover)">
+            <div class="relative w-full aspect-square rounded-lg overflow-hidden mb-3 bg-zinc-800">
+                <img src="{{ track.cover }}" alt="Art" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                        <span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    </div>
+                </div>
+            </div>
+            <p class="font-bold text-white text-sm truncate">{{ track.name }}</p>
+            <p class="text-xs text-zinc-500 truncate mt-1">{{ track.artist }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endfor %}
+{% endblock %}
+
+{% block right_sidebar %}
+<div class="space-y-8 pt-4">
+    <section>
+        <h4 class="text-sm font-headline font-bold text-zinc-300 uppercase tracking-widest mb-4">🔥 Most Popular</h4>
+        <div class="space-y-3">
+            {% for track in popular %}
+            <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
+                 data-name="{{ track.name|e }}" data-artist="{{ track.artist|e }}" data-preview="{{ track.spotify_preview_url|e }}" data-cover="{{ track.cover|e }}" onclick="playSong(this.dataset.name, this.dataset.artist, this.dataset.preview, this.dataset.cover)">
+                <div class="relative w-11 h-11 rounded-lg bg-zinc-800 flex-shrink-0 overflow-hidden">
+                    <img src="{{ track.cover }}" alt="Art" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-white text-sm">play_arrow</span>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-medium text-white truncate">{{ track.name }}</p>
+                    <p class="text-[10px] text-zinc-500 font-headline truncate">{{ track.artist }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <section>
+        <h4 class="text-sm font-headline font-bold text-zinc-300 uppercase tracking-widest mb-4">Recent Activity</h4>
+        <div class="space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></div>
+                <div>
+                    <p class="text-sm text-zinc-200"><span class="font-bold">AI Engine</span> generated new recommendations.</p>
+                    <p class="text-[10px] text-zinc-600 font-headline mt-1 uppercase">2m ago</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

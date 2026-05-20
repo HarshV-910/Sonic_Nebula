@@ -13,3 +13,8 @@ numpy
 joblib
 pytest
 requests
+Flask
+google-api-python-client
+PyYAML
+gunicorn
+boto3

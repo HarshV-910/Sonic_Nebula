@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sonic Nebula | Create Account</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: {
+                "colors": { "primary": "#81ecff", "secondary": "#a68cff", "surface": "#0e0e10", "surface-container": "#19191c", "surface-container-highest": "#262528", "on-surface": "#f9f5f8", "on-surface-variant": "#adaaad", "primary-dim": "#00d4ec", "secondary-dim": "#7e51ff", "on-primary-fixed": "#003840", "error": "#ff6e84", "tertiary": "#ff7076", "outline": "#767577" },
+                "fontFamily": { "headline": ["Space Grotesk"], "body": ["Inter"] }
+            }}
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0e0e10; color: #f9f5f8; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-panel { background: rgba(25, 25, 28, 0.4); backdrop-filter: blur(40px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .nebula-bg { background: radial-gradient(circle at 20% 30%, rgba(129, 236, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(166, 140, 255, 0.15) 0%, transparent 50%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex items-center justify-center overflow-hidden selection:bg-primary">
+    <div class="fixed inset-0 nebula-bg z-0 pointer-events-none"></div>
+    <div class="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full z-0"></div>
+    <div class="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px] rounded-full z-0"></div>
+
+    <main class="relative z-10 w-full max-w-[1200px] px-6 py-12 flex flex-col md:flex-row items-center justify-center gap-16">
+        <!-- Brand Section -->
+        <div class="hidden md:flex flex-col max-w-md">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="material-symbols-outlined text-4xl text-primary">graphic_eq</span>
+                <h1 class="font-headline text-3xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Sonic Nebula</h1>
+            </div>
+            <h2 class="font-headline text-5xl font-bold leading-tight mb-6">
+                Join the <br/><span class="text-secondary">Cosmic</span> Community.
+            </h2>
+            <p class="text-on-surface-variant text-lg leading-relaxed mb-8">Create your account and dive into a universe of limitless music discovery powered by AI.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-panel p-4 rounded-xl">
+                    <span class="material-symbols-outlined text-secondary mb-2">auto_awesome</span>
+                    <p class="text-sm font-headline font-medium">AI Recommendations</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl">
+                    <span class="material-symbols-outlined text-primary mb-2">graphic_eq</span>
+                    <p class="text-sm font-headline font-medium">Stream Anything</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign-Up Card -->
+        <div class="w-full max-w-[440px]">
+            <div class="glass-panel p-8 md:p-10 rounded-3xl shadow-2xl shadow-black/50">
+                <!-- Mobile Branding -->
+                <div class="md:hidden flex flex-col items-center mb-8">
+                    <span class="material-symbols-outlined text-4xl text-primary mb-2">graphic_eq</span>
+                    <h1 class="font-headline text-xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Sonic Nebula</h1>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="font-headline text-2xl font-bold mb-2">Create Account</h3>
+                    <p class="text-on-surface-variant text-sm">Start your journey through the nebula.</p>
+                </div>
+
+                {% if error %}
+                <div class="mb-6 p-3 rounded-xl bg-error/10 border border-error/20 text-error text-sm">{{ error }}</div>
+                {% endif %}
+
+                <form action="/signup" method="POST" class="space-y-5">
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest font-headline font-bold text-on-surface-variant ml-1">Display Name</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-xl">badge</span>
+                            <input name="display_name" class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all text-sm" placeholder="Your display name" type="text" required/>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest font-headline font-bold text-on-surface-variant ml-1">Username</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-xl">person</span>
+                            <input name="username" class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all text-sm" placeholder="choose a username" type="text" required/>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase tracking-widest font-headline font-bold text-on-surface-variant ml-1">Password</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-xl">lock</span>
+                            <input name="password" class="w-full bg-surface-container-highest border-none rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all text-sm" placeholder="••••••••" type="password" required/>
+                        </div>
+                    </div>
+                    <button class="w-full py-4 rounded-xl bg-gradient-to-r from-secondary-dim to-primary-dim text-white font-headline font-bold text-sm tracking-wide shadow-lg shadow-primary/10 hover:opacity-90 active:scale-[0.98] transition-all" type="submit">
+                        CREATE NEBULA ACCOUNT
+                    </button>
+                </form>
+
+                <div class="flex items-center my-8 gap-4">
+                    <div class="h-[1px] flex-1 bg-white/5"></div>
+                    <span class="text-[10px] uppercase tracking-widest font-headline font-bold text-outline">Or</span>
+                    <div class="h-[1px] flex-1 bg-white/5"></div>
+                </div>
+
+                <p class="text-center text-sm text-on-surface-variant">
+                    Already have an account?
+                    <a class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="/signin">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
