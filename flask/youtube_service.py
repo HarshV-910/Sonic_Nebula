@@ -2,6 +2,12 @@ import os
 from googleapiclient.discovery import build
 
 def get_api_key():
+    # First try environment variable
+    env_key = os.environ.get('YOUTUBE_API_KEY')
+    if env_key:
+        return env_key
+        
+    # Fallback to local file
     key_path = os.path.join(os.path.dirname(__file__), '..', 'keys.txt')
     try:
         with open(key_path, 'r') as f:

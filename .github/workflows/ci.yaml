@@ -45,6 +45,10 @@ jobs:
       - name: DVC pull
         run: dvc pull
       
+      - name: Generate UI Data
+        run: |
+          python prepare_ui_data.py
+      
       - name: Run Application
         env:
           AWS_REGION: ap-southeast-2
