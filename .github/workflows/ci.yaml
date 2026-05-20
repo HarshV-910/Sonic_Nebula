@@ -50,11 +50,11 @@ jobs:
           AWS_REGION: ap-southeast-2
           SECRET_KEY: test-secret-key-123
         run: |
-          cd flask && nohup gunicorn --preload --workers 2 --threads 4 --bind 0.0.0.0:8000 app:app & sleep 20
+          cd flask && nohup python -m gunicorn --preload --workers 2 --threads 4 --bind 0.0.0.0:8000 app:app > gunicorn.log 2>&1 &
         
       - name: Test App
         run: |
-          pytest tests_app.py
+          pytest tests_app.py || (cat flask/gunicorn.log && exit 1)
       
       - name: Stop Application
         run: |
