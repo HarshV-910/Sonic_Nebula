@@ -66,26 +66,18 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Ensure ECR repository exists
-        env:
-          ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI || vars.ECR_REPOSITORY_URI }}
         run: |
-          REPO_NAME="${ECR_REPOSITORY_URI#*.amazonaws.com/}"
-
-          if [ -z "$REPO_NAME" ] || [ "$REPO_NAME" = "$ECR_REPOSITORY_URI" ]; then
-            echo "Invalid ECR_REPOSITORY_URI: '$ECR_REPOSITORY_URI'"
-            exit 1
-          fi
-
-          aws ecr describe-repositories --repository-names "$REPO_NAME" >/dev/null 2>&1 || \
-          aws ecr create-repository --repository-name "$REPO_NAME"
+          aws ecr describe-repositories --repository-names "sonic-nebula-ecr" >/dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "sonic-nebula-ecr"
 
       - name: Build, tag and Push Docker Image to ECR
         env:
-          ECR_REPOSITORY_URI: ${{ secrets.ECR_REPOSITORY_URI || vars.ECR_REPOSITORY_URI }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: sonic-nebula-ecr
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG .
-          docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 # zipping and uploading to S3 for AWS CodeDeploy
       - name: Zip files for deployment
@@ -96,7 +88,7 @@ jobs:
       - name: Upload zip to S3
         if: success()
         run: |
-          aws s3 cp deployment.zip s3://hybrid-sys-deployment-bkt/deployment.zip --region ap-southeast-2
+          aws s3 cp deployment.zip s3://sonic-nebula-deploy-bkt/deployment.zip --region ap-southeast-2
 
 # for deployment to AWS CodeDeploy using the uploaded zip file in S3
       - name: Deploy to AWS CodeDeploy
@@ -105,10 +97,10 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws deploy create-deployment \
-          --application-name hybrid_sys_app \
+          --application-name sonic-nebula-app \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name hybrid_sys_deployment_grp \
-          --s3-location bucket=hybrid-sys-deployment-bkt,key=deployment.zip,bundleType=zip \
+          --deployment-group-name sonic-nebula-deploy-grp \
+          --s3-location bucket=sonic-nebula-deploy-bkt,key=deployment.zip,bundleType=zip \
           --file-exists-behavior OVERWRITE \
           --region ap-southeast-2
 
