@@ -19,18 +19,32 @@ def get_api_key():
     return None
 
 YOUTUBE_API_KEY = get_api_key()
+_youtube_client = None
 
-if YOUTUBE_API_KEY:
-    youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
-else:
-    youtube = None
-    print("Warning: YouTube API Key not found.")
+def get_youtube_client():
+    global _youtube_client
+    if _youtube_client is not None:
+        return _youtube_client
+    
+    if YOUTUBE_API_KEY:
+        try:
+            # We initialize statically using build_from_document to avoid network timeouts on cold boot? 
+            # Or just build lazily so if it fails, it only fails the request, not the whole app.
+            _youtube_client = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+            return _youtube_client
+        except Exception as e:
+            print(f"Failed to initialize YouTube API client: {e}")
+            return None
+    else:
+        print("Warning: YouTube API Key not found.")
+        return None
 
 def search_youtube_video(song_name, artist_name):
     """
     Searches YouTube for the best video matching the song name and artist.
     Returns a dict with video_id and thumbnail_url, or None if not found or API fails.
     """
+    youtube = get_youtube_client()
     if not youtube:
         return None
 
@@ -69,6 +83,7 @@ def global_search_youtube(query, max_results=10):
     Searches YouTube for a generic text query.
     Returns a list of dicts with video_id, thumbnail_url, and title.
     """
+    youtube = get_youtube_client()
     if not youtube:
         return []
 
