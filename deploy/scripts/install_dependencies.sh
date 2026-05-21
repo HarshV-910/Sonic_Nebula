@@ -25,8 +25,10 @@ sudo ./aws/install
 # Cleanup
 rm -rf aws awscliv2.zip
 
-# Create swap
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+# # Create swap only if not already exists
+# if ! sudo swapon --show | grep -q "/swapfile"; then
+#     sudo fallocate -l 2G /swapfile
+#     sudo chmod 600 /swapfile
+#     sudo mkswap /swapfile
+#     sudo swapon /swapfile
+# fi
