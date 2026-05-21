@@ -24,6 +24,14 @@ if [ "$(docker ps -aq -f name=sonic-nebula-container)" ]; then
 fi
 
 echo "Starting New Container..."
-docker run -d -p 8000:8000 --name sonic-nebula-container ${ECR_URI}/sonic-nebula-ecr:latest
+
+# Load environment variables
+if [ -f /home/ec2-user/app/.env ]; then
+    source /home/ec2-user/app/.env
+fi
+
+docker run -d -p 8000:8000 \
+    -e YOUTUBE_API_KEY="${YOUTUBE_API_KEY}" \
+    --name sonic-nebula-container ${ECR_URI}/sonic-nebula-ecr:latest
 
 echo "Container Started Successfully."
