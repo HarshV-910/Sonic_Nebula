@@ -1,0 +1,184 @@
+# Sonic Nebula: Complete AWS Deployment Guide
+
+Since you've deleted all existing components on AWS and started fresh with `aws configure` and your connected GitHub repo, here is your step-by-step master guide to deploying the entire Sonic Nebula project on AWS.
+
+This guide uses the `sonic-nebula-*` naming convention to keep your AWS environment clean and organized.
+
+---
+
+## 1. DVC (Data Version Control) Setup on S3
+
+DVC manages your large datasets (`df_transformed.npz`, `interaction_matrix.npz`, etc.). We need an S3 bucket to store this data.
+
+1. **Create an S3 Bucket for DVC**:
+   - Go to **S3** in the AWS Console.
+   - Click **Create bucket**.
+   - **Bucket name**: `sonic-nebula-dvc-bkt` (must be globally unique, you may need to append numbers if taken).
+   - **Region**: `ap-southeast-2` (Sydney).
+   - Leave other settings as default and click **Create bucket**.
+
+2. **Configure DVC Locally** (Run in your terminal):
+   ```bash
+   dvc remote add -d myremote s3://sonic-nebula-dvc-bkt
+   dvc push
+   git add .dvc/config
+   git commit -m "Configure DVC remote to sonic-nebula-dvc-bkt"
+   git push
+   ```
+
+---
+
+## 2. GitHub Actions Secrets Configuration
+
+Your `.github/workflows/ci.yaml` pipeline requires permissions to push to ECR, upload zips to S3, and trigger CodeDeploy.
+
+1. **Create an IAM User for GitHub**:
+   - Go to **IAM** -> **Users** -> **Create user**.
+   - **Name**: `sonic-nebula-github-action-user`.
+   - Attach policies directly: `AmazonS3FullAccess`, `AmazonEC2ContainerRegistryFullAccess`, `AWSCodeDeployFullAccess`.
+   - Complete creation, then go to the User's **Security credentials** tab.
+   - Create an **Access key** (Select "Third-party service").
+
+2. **Add Secrets to GitHub Repo**:
+   - Go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions**.
+   - Add `AWS_ACCESS_KEY_ID` (from step above).
+   - Add `AWS_SECRET_ACCESS_KEY` (from step above).
+   - Add `ECR_REPOSITORY_URI` (Value: `sonic-nebula-ecr` — the pipeline will automatically create the ECR for you if it doesn't exist).
+
+---
+
+## 3. Database Setup: DynamoDB
+
+Your new Flask application uses DynamoDB for storing user accounts.
+
+1. **Create DynamoDB Table**:
+   - Go to **DynamoDB** in the AWS Console.
+   - Click **Create table**.
+   - **Table name**: `SonicNebulaUsers` (Exactly this name, case-sensitive).
+   - **Partition key**: `username` (Type: String).
+   - Leave table settings as Default and click **Create table**.
+
+---
+
+## 4. EC2 Instance Profile & IAM Roles
+
+AWS CodeDeploy needs permissions to pull from S3 and manage EC2. Your EC2 instances need permissions to pull Docker images from ECR and read from DynamoDB.
+
+1. **Create EC2 Role** (`sonic-nebula-ec2-role`):
+   - Go to **IAM** -> **Roles** -> **Create role**.
+   - Trusted entity: **AWS service** -> **EC2**.
+   - Attach Policies: 
+     - `AmazonEC2ContainerRegistryReadOnly` (To pull Docker images)
+     - `AmazonS3ReadOnlyAccess` (To download CodeDeploy artifacts)
+     - `AmazonDynamoDBFullAccess` (To allow the Flask app to read/write users)
+   - **Role name**: `sonic-nebula-ec2-role`.
+
+2. **Create CodeDeploy Service Role** (`sonic-nebula-codedeploy-role`):
+   - Go to **IAM** -> **Roles** -> **Create role**.
+   - Trusted entity: **AWS service** -> **CodeDeploy**.
+   - Attach Policy: `AWSCodeDeployRole`.
+   - **Role name**: `sonic-nebula-codedeploy-role`.
+
+---
+
+## 5. Compute Setup: Launch Template & Auto Scaling Group
+
+We will use a Launch Template so AWS can automatically boot up identical EC2 instances when scaling.
+
+1. **Create Launch Template**:
+   - Go to **EC2** -> **Launch Templates** -> **Create launch template**.
+   - **Name**: `sonic-nebula-template`.
+   - **OS**: Ubuntu (Latest LTS).
+   - **Instance type**: `t2.micro` (Free tier).
+   - **Key pair**: Create a new key pair named `sonic-nebula-key` (download the `.pem` file).
+   - **Security Group**: Create a new Security Group named `sonic-nebula-sg`.
+     - Allow **SSH (Port 22)** from Anywhere.
+     - Allow **Custom TCP (Port 8000)** from Anywhere (This is where Gunicorn runs).
+   - **Advanced Details**:
+     - **IAM instance profile**: Select `sonic-nebula-ec2-role`.
+     - **User data** (Paste this script to install Docker and CodeDeploy Agent on boot):
+       ```bash
+       #!/bin/bash
+       sudo apt update -y
+       sudo apt install ruby-full wget docker.io -y
+       sudo systemctl start docker
+       sudo systemctl enable docker
+       sudo usermod -aG docker ubuntu
+       
+       # Setup Swap for memory-heavy matrices
+       sudo fallocate -l 2G /swapfile
+       sudo chmod 600 /swapfile
+       sudo mkswap /swapfile
+       sudo swapon /swapfile
+
+       # Install CodeDeploy Agent
+       cd /home/ubuntu
+       wget https://aws-codedeploy-ap-southeast-2.s3.ap-southeast-2.amazonaws.com/latest/install
+       chmod +x ./install
+       sudo ./install auto
+       sudo systemctl start codedeploy-agent
+       ```
+
+2. **Create Target Group & Load Balancer** (Optional but recommended for scaling):
+   - Go to **Target Groups** -> **Create target group**.
+     - Type: Instances. Name: `sonic-nebula-tg`. Port: 8000.
+   - Go to **Load Balancers** -> **Create Load Balancer** -> **Application Load Balancer**.
+     - Name: `sonic-nebula-alb`. Internet-facing. Listen on Port 80.
+     - Forward to `sonic-nebula-tg`.
+
+3. **Create Auto Scaling Group (ASG)**:
+   - Go to **Auto Scaling Groups** -> **Create Auto Scaling group**.
+   - **Name**: `sonic-nebula-asg`.
+   - Select the `sonic-nebula-template` you just created.
+   - Select your VPC and subnets (choose multiple AZs).
+   - Attach it to the existing load balancer (`sonic-nebula-tg`).
+   - Group size: **Desired: 1, Min: 1, Max: 1** (Keep at 1 to stay within Free Tier limits. You can increase Max later).
+
+---
+
+## 6. AWS CodeDeploy Configuration
+
+CodeDeploy will take the `.zip` generated by GitHub Actions and deploy it to your EC2 instances.
+
+1. **Create S3 Deployment Bucket**:
+   - Go to **S3** -> **Create bucket**.
+   - **Name**: `sonic-nebula-deploy-bkt` (must match your `ci.yaml`).
+   - Region: `ap-southeast-2`.
+
+2. **Create CodeDeploy Application**:
+   - Go to **CodeDeploy** -> **Applications** -> **Create application**.
+   - **Name**: `sonic-nebula-app`.
+   - **Compute platform**: EC2/On-premises.
+
+3. **Create Deployment Group**:
+   - Inside `sonic-nebula-app`, click **Create deployment group**.
+   - **Name**: `sonic-nebula-deploy-grp`.
+   - **Service role**: Select `sonic-nebula-codedeploy-role`.
+   - **Deployment type**: In-place.
+   - **Environment configuration**: Select **Auto Scaling groups** and choose `sonic-nebula-asg`.
+   - **Load balancer**: Uncheck Enable load balancing (or select `sonic-nebula-tg` if you set up the ALB).
+
+---
+
+## 7. Trigger the Deployment
+
+Everything on AWS is now waiting for code!
+
+1. Go to your local terminal where your repository is.
+2. Commit the changes we made to `ci.yaml` and `start_docker.sh`.
+3. `git push origin main`.
+4. Open your GitHub Repository -> **Actions** tab. You will see the pipeline running. It will:
+   - Pull the DVC data from S3.
+   - Build the Docker image and push it to ECR (`sonic-nebula-ecr`).
+   - Zip the deployment scripts.
+   - Upload them to `sonic-nebula-deploy-bkt`.
+   - Trigger AWS CodeDeploy.
+
+## 8. Testing Your Project
+
+Once the GitHub Action completes successfully:
+1. Go to **AWS CodeDeploy** -> **Deployments**. Ensure the deployment succeeded.
+2. Go to **EC2** -> **Instances**. Find the instance created by your Auto Scaling Group.
+3. Copy its **Public IPv4 address**.
+4. Open your browser and navigate to: `http://<YOUR_EC2_IP>:8000` (or your Load Balancer DNS name if you used an ALB).
+5. You should see the **Sign In / Sign Up** page. Create an account (which will be saved to DynamoDB) and verify that the music recommendation engine works perfectly!
