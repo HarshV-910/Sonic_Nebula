@@ -188,6 +188,11 @@ def inject_global_vars():
 
 # =================== AUTH ROUTES ===================
 
+@app.route('/health')
+def health_check():
+    """Endpoint for AWS Target Group Health Checks"""
+    return "OK", 200
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if 'user' in session:
