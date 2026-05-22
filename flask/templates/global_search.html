@@ -66,52 +66,6 @@
     </div>
 </section>
 
-<script>
-    window.openTheater = function (videoId, title) {
-        console.log("VIDEO:", videoId, title);
-
-        if (!videoId) {
-            alert("Video ID missing ❌");
-            return;
-        }
-
-        const grid = document.getElementById('search-results-grid');
-        const theater = document.getElementById('youtube-theater');
-        const iframe = document.getElementById('youtube-iframe');
-        const titleEl = document.getElementById('youtube-theater-title');
-        const ytLink = document.getElementById('yt-fallback');
-
-        grid.classList.add('hidden');
-
-        theater.classList.remove('hidden');
-        theater.style.display = "flex";
-
-        titleEl.innerText = title;
-
-        // 🔥 Always set fallback link (reliable solution)
-        ytLink.href = `https://www.youtube.com/watch?v=${videoId}`;
-        ytLink.classList.remove('hidden');
-
-        // Load video
-        iframe.src = "";
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    };
-
-    window.closeTheater = function () {
-        const theater = document.getElementById('youtube-theater');
-        const grid = document.getElementById('search-results-grid');
-        const iframe = document.getElementById('youtube-iframe');
-        const ytLink = document.getElementById('yt-fallback');
-
-        theater.style.display = "none";
-        theater.classList.add('hidden');
-
-        grid.classList.remove('hidden');
-
-        iframe.src = "";
-        ytLink.classList.add('hidden');
-    };
-</script>
 {% endif %}
 
 {% endblock %}

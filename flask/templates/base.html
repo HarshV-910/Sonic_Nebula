@@ -405,6 +405,53 @@
         }
     }
 
+    // =================== YOUTUBE THEATER MODE ===================
+    window.openTheater = function (videoId, title) {
+        if (!videoId) return;
+
+        const grid = document.getElementById('search-results-grid');
+        const theater = document.getElementById('youtube-theater');
+        const iframe = document.getElementById('youtube-iframe');
+        const titleEl = document.getElementById('youtube-theater-title');
+        const ytLink = document.getElementById('yt-fallback');
+
+        if(grid) grid.classList.add('hidden');
+
+        if(theater) {
+            theater.classList.remove('hidden');
+            theater.style.display = "flex";
+        }
+
+        if(titleEl) titleEl.innerText = title;
+
+        if(ytLink) {
+            ytLink.href = `https://www.youtube.com/watch?v=${videoId}`;
+            ytLink.classList.remove('hidden');
+        }
+
+        if(iframe) {
+            iframe.src = "";
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        }
+    };
+
+    window.closeTheater = function () {
+        const theater = document.getElementById('youtube-theater');
+        const grid = document.getElementById('search-results-grid');
+        const iframe = document.getElementById('youtube-iframe');
+        const ytLink = document.getElementById('yt-fallback');
+
+        if(theater) {
+            theater.style.display = "none";
+            theater.classList.add('hidden');
+        }
+
+        if(grid) grid.classList.remove('hidden');
+
+        if(iframe) iframe.src = "";
+        if(ytLink) ytLink.classList.add('hidden');
+    };
+
     // =================== SEARCH AUTOCOMPLETE ===================
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
